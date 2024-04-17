@@ -13,8 +13,8 @@
 
 #include "bank.h"
 
-std::string logic(std::string input);
-Bank* ptr;
+std::string logic(Bank* ptr, std::string input);
+
 
 int main()
 {
@@ -86,7 +86,7 @@ int main()
     return 0;
 }
 
-std::string logic(std::string input)
+std::string logic(Bank* ptr, std::string input)
 {
     std::stringstream string(input);
     std::string temp;
