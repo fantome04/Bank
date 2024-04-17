@@ -5,8 +5,7 @@
 
 class BankCell{
 public:
-    BankCell(int num);
-    ~BankCell();
+    BankCell();
     int get_min_balance() const;
     int get_max_balance() const;
     int get_curr_balance() const;
@@ -23,10 +22,6 @@ public:
     int min_amount = 0;
     int max_amount = 1000;
     bool frozen;
-    int num;
-
-    sem_t* cell_sem;
-
 };
 
 #endif

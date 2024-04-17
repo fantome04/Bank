@@ -18,6 +18,13 @@ Bank* ptr;
 
 int main()
 {
+    const char* sem_name = "/sem_shared_mem";
+    sem_t* sem = sem_open(sem_name,  O_CREAT, 0666, 1);
+    if(sem == SEM_FAILED) {
+        std::cerr << "open" << std::endl;
+        exit(errno);
+    }
+
     const int n = 10;
 
     const char* shm_name = "/bank_shared_mem";
@@ -25,7 +32,7 @@ int main()
     int shm_fd = shm_open(shm_name, O_RDWR, 0666);
     if(shm_fd == -1)
     {
-        std::cerr << "shm_open" <<std::endl;
+        std::cerr << "shm_open client" <<std::endl;
         exit(errno);
     }
 
@@ -42,12 +49,27 @@ int main()
     {
         std::string input;
         std::getline(std::cin, input);
-        std::string res = logic(input);
-        if(res == "exit")
+        if(input == "exit")
             break;
-        std::cout << res;
+
+        if(sem_wait(sem) < 0) {
+            std::cerr << "wait" << std::endl;
+            exit(errno);
+        }
+
+        std::string res = logic(input);
+
+        if(sem_post(sem) < 0) {
+            std::cerr << "post" << std::endl;
+            exit(errno);
+        }
+        std::cout << res << std::endl;
     }
 
+    if(sem_close(sem) < 0) {
+        std::cerr << "close" << std::endl;
+        exit(errno);
+    }
 
     if(munmap(ptr, size) == -1)
     {
@@ -118,7 +140,7 @@ std::string logic(std::string input)
         }
         else if(in[0] == "addall")
         {
-            bool res = ptr->add_to_all(std::stoi(in[1]) - 1);
+            bool res = ptr->add_to_all(std::stoi(in[1]));
             if(!res)
                 str = str + "invalid id";
             else
@@ -126,7 +148,7 @@ std::string logic(std::string input)
         }
         else if(in[0] == "suball")
         {
-            bool res = ptr->sub_from_all(std::stoi(in[1]) - 1);
+            bool res = ptr->sub_from_all(std::stoi(in[1]));
             if(!res)
                 str = str + "invalid id";
             else
