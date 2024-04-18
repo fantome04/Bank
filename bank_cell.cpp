@@ -6,7 +6,7 @@
 #include <string>
 
 BankCell::BankCell(int num)
-        :current_balance(0), num(num) {
+        :current_balance(0), num(num), frozen(false) {
     std::string name = std::to_string(num);
     cell_sem = sem_open(name.c_str(), O_CREAT | O_EXCL, 1, 1);
     if(cell_sem == SEM_FAILED) {
