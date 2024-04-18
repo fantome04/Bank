@@ -13,8 +13,7 @@
 
 #include "bank.h"
 
-std::string logic(std::string input);
-Bank* ptr;
+std::string logic(Bank* ptr, std::string input);
 
 int main()
 {
@@ -38,7 +37,7 @@ int main()
 
     std::size_t size = sizeof(Bank) + n * sizeof(BankCell);
 
-    ptr = (Bank*)mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
+    Bank* ptr = (Bank*)mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);
     if(ptr == MAP_FAILED)
     {
         std::cerr << "init mmap" << std::endl;
@@ -57,7 +56,7 @@ int main()
             exit(errno);
         }
 
-        std::string res = logic(input);
+        std::string res = logic(ptr, input);
 
         if(sem_post(sem) < 0) {
             std::cerr << "post" << std::endl;
@@ -86,7 +85,7 @@ int main()
     return 0;
 }
 
-std::string logic(std::string input)
+std::string logic(Bank* ptr, std::string input)
 {
     std::stringstream string(input);
     std::string temp;
