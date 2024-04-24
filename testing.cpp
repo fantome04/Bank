@@ -12,6 +12,7 @@
 #include <string>
 
 #include "bank.h"
+#include "config.h"
 
 std::string logic(std::string input);
 
@@ -168,16 +169,11 @@ int* id;
 
 int main()
 {
-    const char* sem_name = "/sem_shared_mem";
     sem_t* sem = sem_open(sem_name,  O_CREAT, 0666, 1);
     if(sem == SEM_FAILED) {
         std::cerr << "open" << std::endl;
         exit(errno);
     }
-
-    const int n = 10;
-
-    const char* shm_name = "/bank_shared_mem";
 
     int shm_fd = shm_open(shm_name, O_RDWR, 0666);
     if(shm_fd == -1)

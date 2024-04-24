@@ -5,6 +5,8 @@
 #include <arpa/inet.h>
 #include <string>
 
+#include "config.h"
+
 int main(){
     struct sockaddr_in server_address;
 
@@ -14,9 +16,9 @@ int main(){
         exit(errno);
     }
 
-    server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_address.sin_addr.s_addr = inet_addr(IP_address);
     server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(9888);
+    server_address.sin_port = htons(hostshort);
 
     int connected = connect(client_socket, (struct sockaddr*) &server_address, sizeof(server_address));
 

@@ -5,19 +5,19 @@ CLIB = -lrt -lpthread
 
 compile: init client server destroy
 
-init: bank.h init.cpp bank.o bank_cell.o
+init: bank.h init.cpp bank.o bank_cell.o config.h
 	$(CXX) init.cpp bank.o bank_cell.o -o init $(CLIB) $(CFLAGS)
 
-client: client.cpp
+client: client.cpp config.h
 	$(CXX) client.cpp -o client $(CLIB) $(CFLAGS)
 
-server: bank.h server.cpp bank.o bank_cell.o
+server: bank.h server.cpp bank.o bank_cell.o config.h
 	$(CXX) server.cpp bank.o bank_cell.o -o server $(CLIB) $(CFLAGS)
 
-destroy: bank.h destroy.cpp bank.o bank_cell.o
+destroy: bank.h destroy.cpp bank.o bank_cell.o config.h
 	$(CXX) destroy.cpp bank.o bank_cell.o -o destroy $(CLIB) $(CFLAGS)
 
-testing: bank.h client.cpp debug_bank.o debug_bank_cell.o
+testing: bank.h client.cpp debug_bank.o debug_bank_cell.o config.h
 	$(CXX) testing.cpp bank.o bank_cell.o $(DBGFLAGS) $(CFLAGS) -o testing $(CLIB)
 
 debug_valgrind: init testing destroy
