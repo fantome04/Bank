@@ -9,12 +9,10 @@
 #include <cerrno>
 
 #include "bank.h"
+#include "config.h"
 
 int main()
 {
-    const char* sem_name = "/sem_shared_mem";
-    const char* shm_name = "/bank_shared_mem";
-
     if(shm_unlink(shm_name) < 0)
     {
         std::cerr << "shm_unlink" << std::endl;
