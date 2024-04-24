@@ -1,5 +1,6 @@
 CXX = g++
-CFLAGS = -Werror -Wall -g -fsanitize=address,undefined
+CFLAGS = -Werror -Wall 
+DBGFLAFS = -g -fsanitize=address,undefined
 CLIB = -lrt -lpthread
 
 .PHONY: run_client run
@@ -13,16 +14,16 @@ run_client: client
 	./client
 
 init: bank.h init.cpp bank.o bank_cell.o
-	$(CXX) init.cpp bank.o bank_cell.o -o init $(CLIB)
+	$(CXX) init.cpp bank.o bank_cell.o -o init $(CLIB) $(CFLAGS)
 
 client: bank.h client.cpp bank.o bank_cell.o
-	$(CXX) client.cpp bank.o bank_cell.o -o client $(CLIB)
+	$(CXX) client.cpp bank.o bank_cell.o -o client $(CLIB) $(CFLAGS)
 
 destroy: bank.h destroy.cpp bank.o bank_cell.o
-	$(CXX) destroy.cpp bank.o bank_cell.o -o destroy $(CLIB)
+	$(CXX) destroy.cpp bank.o bank_cell.o -o destroy $(CLIB) $(CFLAGS)
 
 testing: bank.h client.cpp bank.o bank_cell.o
-	$(CXX) testing.cpp bank.o bank_cell.o $(-CFLAGS) -o testing $(CLIB)
+	$(CXX) testing.cpp bank.o bank_cell.o $(CFLAGS) $(DBGFLAGS) -o testing $(CLIB)
 
 debug_valgrind: init testing destroy
 	./init
@@ -36,4 +37,4 @@ bank.o: bank_cell.h bank.h bank.cpp
 	$(CXX) bank.cpp -c
 
 clean:
-	rm -f init client destroy *.o init_d client_d destroy_d
+	rm -f init client testing destroy *.o 
