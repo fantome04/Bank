@@ -8,16 +8,14 @@
 #include <semaphore.h>
 
 #include "bank.h"
+#include "config.h"
 
 int main()
 {
-    const int n = 10;
-
-    const char* shm_name = "/bank_shared_mem";
     int shm_fd = shm_open(shm_name, O_CREAT | O_RDWR , 0666);
     if(shm_fd == -1)
     {
-        std::cerr << "shm_open" <<std::endl;
+        std::cerr << "shm_open init" <<std::endl;
         exit(errno);
     }
     
@@ -41,7 +39,7 @@ int main()
     bank_ptr->bankSize = n;
 
     for (int i = 0 ; i < n; ++i) {
-        bank_ptr->cells[i] = BankCell(i);
+        bank_ptr->cells[i] = BankCell();
     }
 
     if(munmap(ptr, size) == -1)

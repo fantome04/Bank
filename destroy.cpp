@@ -9,29 +9,20 @@
 #include <cerrno>
 
 #include "bank.h"
+#include "config.h"
 
 int main()
 {
-    const char* shm_name = "/bank_shared_mem";
-    int shm_fd = shm_open(shm_name, O_RDWR, 0666);
-
-    if(shm_fd == -1)
-    {
-        std::cerr << "sem shm open" << std::endl;
-        exit(errno);
-    }
-    if(shm_unlink(shm_name) == -1)
+    if(shm_unlink(shm_name) < 0)
     {
         std::cerr << "shm_unlink" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    if(close(shm_fd) == -1)
-    {
-        std::cerr << "init close" <<std::endl;
+    if(sem_unlink(sem_name) < 0) {
+        std::cerr << "sem_unlink" << std::endl;
         exit(EXIT_FAILURE);
     }
-
 
     return 0;
 }
