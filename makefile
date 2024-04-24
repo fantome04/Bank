@@ -18,7 +18,7 @@ destroy: bank.h destroy.cpp bank.o bank_cell.o
 	$(CXX) destroy.cpp bank.o bank_cell.o -o destroy $(CLIB) $(CFLAGS)
 
 testing: bank.h client.cpp debug_bank.o debug_bank_cell.o
-	$(CXX) testing.cpp bank.o bank_cell.o $(CFLAGS) $(DBGFLAGS) -o testing $(CLIB)
+	$(CXX) testing.cpp bank.o bank_cell.o $(DBGFLAGS) -o testing $(CLIB)
 
 debug_valgrind: init testing destroy
 	./init
@@ -29,13 +29,13 @@ bank_cell.o: bank_cell.cpp bank.h
 	$(CXX) bank_cell.cpp -c
 
 debug_bank_cell.o: bank_cell.cpp bank.h
-	$(CXX) bank_cell.cpp -c -o $(CFLAGS) $(DBGFLAGS) debug_bank_cell.o
+	$(CXX) bank_cell.cpp -c $(DBGFLAGS) -o debug_bank_cell.o
 
 bank.o: bank_cell.h bank.h bank.cpp
 	$(CXX) bank.cpp -c
 
 debug_bank.o: bank_cell.h bank.h bank.cpp
-	$(CXX) bank.cpp -c -o $(CFLAGS) $(DBGFLAGS) debug_bank.o
+	$(CXX) bank.cpp -c $(DBGFLAGS) -o debug_bank.o
 
 .PHONY: clean
 
