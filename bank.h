@@ -21,7 +21,7 @@ public:
     bool set_cell_max_amount(int num, int amount);
     std::string get_info(int num);
 
-    unsigned int bankSize;
+    int bankSize;
     BankCell cells[];
 
     BankCell& operator[](unsigned int ind);

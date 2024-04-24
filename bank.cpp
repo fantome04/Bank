@@ -147,7 +147,6 @@ std::string Bank::get_info(int num) {
     else {
         res += "false";
     }
-    std::cout << cells[num].is_frozen() << std::endl;
 
     return res;
 }
