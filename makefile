@@ -22,7 +22,7 @@ client: bank.h client.cpp bank.o bank_cell.o
 destroy: bank.h destroy.cpp bank.o bank_cell.o
 	$(CXX) destroy.cpp bank.o bank_cell.o -o destroy $(CLIB) $(CFLAGS)
 
-testing: bank.h client.cpp bank.o bank_cell.o
+testing: bank.h client.cpp debug_bank.o debug_bank_cell.o
 	$(CXX) testing.cpp bank.o bank_cell.o $(DBGFLAGS) $(CFLAGS) -o testing $(CLIB)
 
 debug_valgrind: init testing destroy
