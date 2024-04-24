@@ -18,10 +18,10 @@ public:
     void set_max_amount(int amount);
 
 public:
-    int current_balance;
+    int current_balance = 0;
     int min_amount = 0;
     int max_amount = 1000;
-    bool frozen;
+    bool frozen = false;
 };
 
 #endif
