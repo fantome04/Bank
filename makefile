@@ -31,13 +31,13 @@ debug_valgrind: init testing destroy
 	./destroy
 
 bank_cell.o: bank_cell.cpp bank.h
-	$(CXX) bank_cell.cpp -c
+	$(CXX) bank_cell.cpp -c $(CFLAGS)
 
 debug_bank_cell.o: bank_cell.cpp bank.h
 	$(CXX) bank_cell.cpp -c $(DBGFLAGS) $(CFLAGS) -o debug_bank_cell.o
 
 bank.o: bank_cell.h bank.h bank.cpp
-	$(CXX) bank.cpp -c
+	$(CXX) bank.cpp -c $(CFLAGS)
 
 debug_bank.o: bank_cell.h bank.h bank.cpp
 	$(CXX) bank.cpp -c $(DBGFLAGS) $(CFLAGS) -o debug_bank.o
