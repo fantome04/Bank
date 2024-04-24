@@ -1,28 +1,24 @@
 CXX = g++
-CFLAGS = -Werror -Wall -g -fsanitize=address,undefined
+CFLAGS = -Werror -Wall
+DBGFLAGS = -g -fsanitize=address,undefined
 CLIB = -lrt -lpthread
 
-.PHONY: run_client run
-
-run: init client destroy
-	./init
-	./client
-	./destroy
-
-run_client: client
-	./client
+compile: init client server destroy
 
 init: bank.h init.cpp bank.o bank_cell.o
-	$(CXX) init.cpp bank.o bank_cell.o -o init $(CLIB)
+	$(CXX) init.cpp bank.o bank_cell.o -o init $(CLIB) $(CFLAGS)
 
-client: bank.h client.cpp bank.o bank_cell.o
-	$(CXX) client.cpp bank.o bank_cell.o -o client $(CLIB)
+client: client.cpp
+	$(CXX) client.cpp -o client $(CLIB) $(CFLAGS)
+
+server: bank.h server.cpp bank.o bank_cell.o
+	$(CXX) server.cpp bank.o bank_cell.o -o server $(CLIB) $(CFLAGS)
 
 destroy: bank.h destroy.cpp bank.o bank_cell.o
-	$(CXX) destroy.cpp bank.o bank_cell.o -o destroy $(CLIB)
+	$(CXX) destroy.cpp bank.o bank_cell.o -o destroy $(CLIB) $(CFLAGS)
 
 testing: bank.h client.cpp bank.o bank_cell.o
-	$(CXX) testing.cpp bank.o bank_cell.o $(-CFLAGS) -o testing $(CLIB)
+	$(CXX) testing.cpp bank.o bank_cell.o $(CFLAGS) $(DBGFLAGS) -o testing $(CLIB)
 
 debug_valgrind: init testing destroy
 	./init
@@ -35,5 +31,7 @@ bank_cell.o: bank_cell.cpp bank.h
 bank.o: bank_cell.h bank.h bank.cpp
 	$(CXX) bank.cpp -c
 
+.PHONY: clean
+
 clean:
-	rm -f init client destroy *.o init_d client_d destroy_d
+	rm -f init client server testing destroy *.o

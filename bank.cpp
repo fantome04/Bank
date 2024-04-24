@@ -131,6 +131,27 @@ bool Bank::set_cell_max_amount(int num, int amount) {
     return true;
 }
 
+std::string Bank::get_info(int num) {
+    if(num < 0 || num >= bankSize) {
+        return "";
+    }
+
+    std::string res = "curr: ";
+    res = res + std::to_string(cells[num].get_curr_balance()) + " | min: ";
+    res = res + std::to_string(cells[num].get_min_balance()) + " | max: ";
+    res = res + std::to_string(cells[num].get_max_balance()) + " | frozen: ";
+
+    if(cells[num].is_frozen()) {
+        res += "true";
+    }
+    else {
+        res += "false";
+    }
+    std::cout << cells[num].is_frozen() << std::endl;
+
+    return res;
+}
+
 BankCell& Bank::operator[](unsigned int ind)
 {
     return cells[ind];
