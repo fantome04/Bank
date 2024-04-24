@@ -5,8 +5,7 @@
 #include <semaphore.h>
 #include <string>
 
-BankCell::BankCell()
-        :current_balance(0) { }
+BankCell::BankCell() { }
 
 int BankCell::get_min_balance() const {
     return min_amount;
