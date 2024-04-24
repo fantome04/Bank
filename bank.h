@@ -19,7 +19,7 @@ public:
     bool set_cell_min_amount(int num, int amount);
     bool set_cell_max_amount(int num, int amount);
 
-    unsigned int bankSize;
+    int bankSize;
     BankCell cells[];
 
     BankCell& operator[](unsigned int ind);
