@@ -13,7 +13,6 @@
 
 int main()
 {
-
     if(shm_unlink(shm_name) < 0)
     {
         std::cerr << "shm_unlink" << std::endl;

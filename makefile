@@ -1,5 +1,6 @@
 CXX = g++
 CFLAGS = -Werror -Wall
+CFLAGS = -Werror -Wall
 DBGFLAGS = -g -fsanitize=address,undefined
 CLIB = -lrt -lpthread
 

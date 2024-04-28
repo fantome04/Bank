@@ -6,4 +6,5 @@ constexpr const char* shm_name = "/bank_shared_mem";
 constexpr const char* sem_name = "/sem_shared_mem";
 constexpr const char* IP_address = "127.0.0.1";
 constexpr const int hostshort = 9888;
+
 #endif
