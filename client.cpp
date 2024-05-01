@@ -27,6 +27,9 @@ int main(){
         exit(errno);
     }
 
+    system("clear");
+
+    std::cout << "Connected to server" << std::endl;
     std::string mssg;
     char buffer[3001];
 
@@ -48,7 +51,17 @@ int main(){
             exit(EXIT_FAILURE);
         }
 
+        system("clear");
+
         if(rs > 0) {
+            if(std::string(buffer) == "shut down") {
+                if(close(client_socket) < 0){
+                    perror("close");
+                    exit(errno);
+                }
+
+                exit(EXIT_SUCCESS);
+            }
             std::cout << buffer << std::endl;
         }
     }

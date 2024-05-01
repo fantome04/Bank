@@ -22,7 +22,11 @@
 sem_t* sem;
 Bank* ptr;
 
+int request_counter = 0;
+bool is_shutting = false;
+
 std::string logic(std::string input);
+void server_handler();
 
 void client_handler(int client_socket);
 
@@ -75,8 +79,9 @@ int main()
     }
 
     std::vector<std::thread> client_threads;
+    std::thread server_thread(server_handler);
 
-    while(true){
+    while(true) {
         int client_socket;
         struct sockaddr_in client_address;
         unsigned int client_addr_len = sizeof(client_address);
@@ -94,6 +99,8 @@ int main()
     for (auto &thread : client_threads) {
         thread.join();
     }
+
+    server_thread.join();
 
     if(close(server_socket) < 0){
         perror("close");
@@ -120,7 +127,20 @@ int main()
     return 0;
 }
 
-void client_handler(int client_socket){
+void server_handler() {
+    bool has_printed = false;
+    while(true) {
+        if(request_counter % 5 == 0 && !has_printed){
+            std::cout << "The count of total request is: " << request_counter << std::endl;
+            has_printed = true;
+        }
+        if(request_counter % 5 == 1) {
+            has_printed = false;
+        }
+    }
+}
+
+void client_handler(int client_socket) {
     char buffer[3001];
     int rs;
 
@@ -132,7 +152,32 @@ void client_handler(int client_socket){
 
         buffer[rs] = '\0';
 
+        if(std::string(buffer) == "shut down") {
+            is_shutting = true;
+        }
+
+        if(is_shutting) {
+            std::string mssg = std::string(buffer);
+            int sent = send(client_socket, mssg.c_str(), mssg.size(), 0);
+            if(sent == -1){
+                return;
+            }
+
+            if(sem_post(sem) < 0) {
+                std::cerr << "post" << std::endl;
+                return;
+            }
+
+            if(close(client_socket) < 0){
+                perror("close");
+                return;
+            }
+
+            exit(EXIT_SUCCESS);
+        }
+
         std::string mssg =  logic(buffer);
+        ++request_counter;
 
         int sent = send(client_socket, mssg.c_str(), mssg.size(), 0);
         if(sent == -1){
@@ -144,6 +189,7 @@ void client_handler(int client_socket){
             return;
         }
     }
+
     if (rs == -1) {
         perror("receive");
         return;
@@ -167,114 +213,58 @@ std::string logic(std::string input)
 
     if(in.size() == 2)
     {
-        if(in[0] == "current")
+        if(in[0] == "freeze")
         {
-            int res = ptr->get_cell_curr_balance(std::stoi(in[1]) - 1);
-            if(res == -1)
-                str = str + "invalid id";
-            else
-                str = str + "Current balance for cell number " + in[1] + ": " + std::to_string(res);
-        }
-        else if(in[0] == "minimum")
-        {
-            int res = ptr->get_cell_min_balance(std::stoi(in[1]) - 1);
-            if(res == -1)
-                str = str + "invalid id";
-            else
-                str = str + "Minimum balance for cell number " + in[1] + ": " + std::to_string(res);
-        }
-        else if(in[0] == "maximum")
-        {
-            int res = ptr->get_cell_max_balance(std::stoi(in[1]) - 1);
-            if(res == -1)
-                str = str + "invalid id";
-            else
-                str = str + "Maximum balance for cell number " + in[1] + ": " + std::to_string(res);
-        }
-        else if(in[0] == "freeze")
-        {
-            bool res = ptr->freeze_cell(std::stoi(in[1]) - 1);
-            if(!res)
-                str = str + "invalid id";
-            else
-                str = str + "Cell number " + in[1] + " successfully frozen";
+            str = ptr->freeze_cell(std::stoi(in[1]) - 1);
         }
         else if(in[0] == "unfreeze")
         {
-            bool res = ptr->unfreeze_cell(std::stoi(in[1]) - 1);
-            if(!res)
-                str = str + "invalid id";
-            else
-                str = str + "Cell number " + in[1] + " successfully unfrozen";
+            str = ptr->unfreeze_cell(std::stoi(in[1]) - 1);
         }
         else if(in[0] == "addall")
         {
-            bool res = ptr->add_to_all(std::stoi(in[1]));
-            if(!res)
-                str = str + "invalid id";
-            else
-                str = str + "Successfully added " + in[1] + " to all cells";
+            str = ptr->add_to_all(std::stoi(in[1]));
         }
         else if(in[0] == "suball")
         {
-            bool res = ptr->sub_from_all(std::stoi(in[1]));
-            if(!res)
-                str = str + "invalid id";
-            else
-                str = str + "Successfully subbed " + in[1] + " from all cells";
+            str = ptr->sub_from_all(std::stoi(in[1]));
         }
         else if(in[0] == "getinfo") {
-            std::string res = ptr->get_info(std::stoi(in[1]) - 1);
-            if(res == "")
-                str = str + "invalid id";
-            else
-                str = str + res;
+            str = ptr->get_info(std::stoi(in[1]) - 1);
         }
         else
         {
-            str = str + "invalid id";
+            str = "invalid input";
         }
     }
     else if(in.size() == 3)
     {
         if(in[0] == "setmin")
         {
-            bool res = ptr->set_cell_min_amount(std::stoi(in[1]) - 1, std::stoi(in[2]));
-            if(!res)
-                str = str + "invalid operation";
-            else
-                str = str + "Minimum for cell " + in[1] + " is set to "+ in[2];
+            str = ptr->set_cell_min_amount(std::stoi(in[1]) - 1, std::stoi(in[2]));
         }
         else if(in[0] == "setmax")
         {
-            bool res = ptr->set_cell_max_amount(std::stoi(in[1]) - 1, std::stoi(in[2]));
-            if(!res)
-                str = str + "invalid operation";
-            else
-                str = str + "Maximum for cell " + in[1] + " is set to " + in[2];
+            str = ptr->set_cell_max_amount(std::stoi(in[1]) - 1, std::stoi(in[2]));
         }
         else
         {
-            str = str + "invalid input";
+            str = "invalid input";
         }
     }
     else if(in.size() == 4)
     {
         if(in[0] == "transfer")
         {
-            bool res = ptr->transfer(std::stoi(in[1]) - 1, std::stoi(in[2]) - 1, std::stoi(in[3]));
-            if(!res)
-                str = str + "invalid operation";
-            else
-                str = str + "Successfully transferred " + in[3] + " from " + in[1] + " to " + in[2];
+            str = ptr->transfer(std::stoi(in[1]) - 1, std::stoi(in[2]) - 1, std::stoi(in[3]));
         }
         else
         {
-            str = str + "invalid input";
+            str = "invalid input";
         }
     }
     else {
-        str = str + "invalid input";
+        str = "invalid input";
     }
     return str;
 }
